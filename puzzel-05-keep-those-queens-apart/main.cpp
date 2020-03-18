@@ -87,27 +87,14 @@ void find_possible_boards(int dimension) {
 
 bool check_conflict(int board[], int dimension, int new_queen_row, int new_queen_col) {
 
-    // Not required in our approach
-    // Checking column
-    // if (board[new_queen_col] == -1) return false;
-
     // Checking row
     for (int i = 0; i < dimension; i++)
         if (i != new_queen_col && board[i] == new_queen_row)
             return true;
 
     // Checking diagnals to the left of new_queen_col
-    for (int i = 0; i < new_queen_col; i++) {
-        if (board[i] == new_queen_row + (i - new_queen_col)) return true;
-        if (board[i] == new_queen_row - (i - new_queen_col)) return true;
-    }
-
-    // Not required in our approach
-    // Checking right side
-    // for (int i = new_queen_col + 1; i < dimension; i++) {
-    //     if (board[i] == new_queen_row + (i - new_queen_col)) return false;
-    //     if (board[i] == new_queen_row - (i - new_queen_col)) return false;
-    // }
+    for (int i = 0; i < new_queen_col; i++)
+        if (std::abs(board[i] - new_queen_row) == new_queen_col - i) return true;
 
     return false;
 
