@@ -30,7 +30,7 @@ void break_crystal(int n, int d) {
     std::cout << "Radix used: " << r << std::endl;
 
     // TODO: Read https://stackoverflow.com/questions/4029870/how-to-create-a-dynamic-array-of-integers
-    int *digits = new int[d];
+    int * digits = new int[d];
     for (int i = 0; i < d; i++) digits[i] = 0;
 
     // Where to start looking
