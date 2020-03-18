@@ -23,8 +23,19 @@ void find_possible_boards(int dimension) {
     
     board[0] = 0;
     int col = 1;
-    bool solution = true;
-    while (col < dimension && solution) {
+    bool further_solutions = true;
+    int solution_counter = 0;
+
+    // Need to keep going back to look for more solutions until
+    // we don't have any more options left in the 0th column
+    // while (col < dimension && solution) {
+    while (further_solutions) {
+
+        if (col == dimension) {
+            print_board(board, dimension);
+            std::cout << std::endl;
+            solution_counter++;
+        }
 
         bool next_col = false;
 
@@ -44,8 +55,8 @@ void find_possible_boards(int dimension) {
 
         while (true) {
 
-            if (option < 0) { 
-                solution = false;
+            if (option == 0 && board[option] + 1 == dimension) { 
+                further_solutions = false;
                 break;
             }
 
@@ -70,9 +81,8 @@ void find_possible_boards(int dimension) {
 
     }
 
-    if (solution) print_board(board, dimension);
-    else std::cout << "No solution." << std::endl;
-
+    if (solution_counter == 0) std::cout << "No solutions" << std::endl;
+    else std::cout << solution_counter << " board(s) found." << std::endl;
 
 }
 
@@ -87,7 +97,7 @@ bool check_conflict(int board[], int dimension, int new_queen_row, int new_queen
         if (i != new_queen_col && board[i] == new_queen_row)
             return true;
 
-    // Checking diagnals to the left of new_queen_column
+    // Checking diagnals to the left of new_queen_col
     for (int i = 0; i < new_queen_col; i++) {
         if (board[i] == new_queen_row + (i - new_queen_col)) return true;
         if (board[i] == new_queen_row - (i - new_queen_col)) return true;
