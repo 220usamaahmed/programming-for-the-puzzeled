@@ -1,6 +1,6 @@
 #include <iostream>
 
-const int N = 8;
+const int N = 16;
 
 int tile_number = 1;
 
@@ -54,8 +54,6 @@ void tile_courtyard(int courtyard[N][N], int row, int col, int n) {
         tile_courtyard(courtyard,   row,            col + half_n,   half_n);
         tile_courtyard(courtyard,   row + half_n,   col + half_n,   half_n);
 
-        std::cout << row + half_n + (hole.first / (row + half_n)) - 1 << " " 
-                  << col + half_n + (hole.second / (col + half_n)) - 1<< std::endl;
         place_tile(courtyard, row + half_n - 1, col + half_n -1, std::make_pair(
             row + half_n + (hole.first / (row + half_n)) - 1, 
             col + half_n + (hole.second / (col + half_n)) - 1
@@ -96,8 +94,8 @@ void print_courtyard(int courtyard[N][N]) {
     
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++)
-            if (courtyard[i][j] == -1) std::cout << "  X  ";
-            else std::cout << "  " << (char) (65 + courtyard[i][j]) << "  ";
+            if (courtyard[i][j] == -1) std::cout << "  \033[91mX\033[0m  ";
+            else std::cout << "  " << (char) (65 + courtyard[i][j] % 26) << "  ";
         std::cout << std::endl << std::endl;
     }
 
