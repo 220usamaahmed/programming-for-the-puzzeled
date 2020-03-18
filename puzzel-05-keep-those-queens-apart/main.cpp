@@ -28,17 +28,17 @@ void find_possible_boards(int dimension) {
 
     // Need to keep going back to look for more solutions until
     // we don't have any more options left in the 0th column
-    // while (col < dimension && solution) {
     while (further_solutions) {
 
+        // Printing solution if last column reached
         if (col == dimension) {
             print_board(board, dimension);
             std::cout << std::endl;
             solution_counter++;
         }
 
+        // Checking if we can go forward or need to backtrack
         bool next_col = false;
-
         for (int i = 0; i < dimension; i++) {
             if (!check_conflict(board, dimension, i, col)) {
                 board[col] = i;
@@ -47,7 +47,6 @@ void find_possible_boards(int dimension) {
                 break; // Look for next column now
             }
         }
-
         if (next_col) continue;
 
         // Looking for more options by back tracking        
@@ -55,15 +54,15 @@ void find_possible_boards(int dimension) {
 
         while (true) {
 
+            // Checking if we are all out of options
             if (option == 0 && board[option] + 1 == dimension) { 
                 further_solutions = false;
                 break;
             }
 
+            // Checking if current column provides any options
             bool next_col = false;
-
             for (int i = board[option] + 1; i < dimension; i++) {
-
                 if (!check_conflict(board, dimension, i, option)) {
                     board[option] = i;
                     col = option + 1;
@@ -71,9 +70,9 @@ void find_possible_boards(int dimension) {
                     break;
                 }
             }
-
             if (next_col) break;
 
+            // Going back further if no option found
             board[option] = -1;
             option--;
 
