@@ -1,138 +1,95 @@
-/**
- * VERY DISGUSTING SOLUTION
- */ 
-
 #include <iostream>
 
 const int N = 8;
 
-int tile_number = 0;
+int tile_number = 1;
 
-void tile_courtyard(int courtyard[N][N], int row, int col, int sRow, int sCol, int n);
+void tile_courtyard(int courtyard[N][N], int row, int col, int n);
 void print_courtyard(int courtyard[N][N]);    
 
 int main() {
     
-
     int courtyard[N][N];
     for (int i = 0; i < N; i++)
         for (int j = 0; j < N; j++)
             courtyard[i][j] = 0;
+    courtyard[4][4] = -1;
 
-    courtyard[3][0] = -1;
-
-    tile_courtyard(courtyard, 0, 0, 3, 0, N);
+    tile_courtyard(courtyard, 0, 0, N);
 
     print_courtyard(courtyard);
 
 }
 
-void tile_courtyard(int courtyard[N][N], int row, int col, int sRow, int sCol, int n) {
+void tile_courtyard(int courtyard[N][N], int row, int col, int n) {
 
-    bool contains_hole(int courtyard[N][N], int row, int col, int n);
+    std::pair<int, int> find_hole(int courtyard[N][N], int row, int col, int n);
+    void place_tile(int courtyard[N][N], int row, int col, std::pair<int, int> hole);
+
+    std::pair<int, int> hole = find_hole(courtyard, row, col, n);
 
     if (n == 2) {
 
-        courtyard[row][col] = tile_number;
-        courtyard[row + 1][col] = tile_number;
-        courtyard[row][col + 1] = tile_number;
-        courtyard[row + 1][col + 1] = tile_number;
-        
-        courtyard[sRow][sCol] = -1;
-        
-        tile_number++;
+        place_tile(courtyard, row, col, hole);
 
     } else {
 
         int half_n = n / 2;
 
-        if (contains_hole(courtyard, row, col, half_n)) { // A
-
-            courtyard[row + half_n    ][col + half_n - 1] = -1;
-            courtyard[row + half_n - 1][col + half_n    ] = -1;
-            courtyard[row + half_n    ][col + half_n    ] = -1;
-
-            tile_courtyard(courtyard,   row,            col,            sRow,                   sCol,                   half_n); // A
-            tile_courtyard(courtyard,   row + half_n,   col,            row + half_n,           col + half_n - 1,       half_n); // B
-            tile_courtyard(courtyard,   row,            col + half_n,   row + half_n - 1,       col + half_n,           half_n); // C
-            tile_courtyard(courtyard,   row + half_n,   col + half_n,   row + half_n,           col + half_n,           half_n); // D
-            
-            courtyard[row + half_n    ][col + half_n - 1] = tile_number;
-            courtyard[row + half_n - 1][col + half_n    ] = tile_number;
-            courtyard[row + half_n    ][col + half_n    ] = tile_number;
-
-            tile_number++;
-
-        } else if (contains_hole(courtyard, row + half_n, col, half_n)) { // B
-
+        // Need to place hole in the three quadrants that dont have a hole already
+        if (hole.first >= row + half_n || hole.second >= col + half_n)
             courtyard[row + half_n - 1][col + half_n - 1] = -1;
-            courtyard[row + half_n - 1][col + half_n    ] = -1;
-            courtyard[row + half_n    ][col + half_n    ] = -1;
 
-            tile_courtyard(courtyard,   row,            col,            row + half_n - 1,       col + half_n - 1,       half_n); // A
-            tile_courtyard(courtyard,   row + half_n,   col,            sRow,                   sCol,                   half_n); // B
-            tile_courtyard(courtyard,   row,            col + half_n,   row + half_n - 1,       col + half_n,           half_n); // C
-            tile_courtyard(courtyard,   row + half_n,   col + half_n,   row + half_n,           col + half_n,           half_n); // D
+        if (hole.first < row + half_n || hole.second >= col + half_n)
+            courtyard[row + half_n][col + half_n - 1] = -1;
 
-            courtyard[row + half_n - 1][col + half_n - 1] = tile_number;
-            courtyard[row + half_n - 1][col + half_n    ] = tile_number;
-            courtyard[row + half_n    ][col + half_n    ] = tile_number;
+        if (hole.first >= row + half_n || hole.second < col + half_n )
+            courtyard[row + half_n - 1][col + half_n] = -1;
 
-            tile_number++;
+        if (hole.first < row + half_n || hole.second < col + half_n)
+            courtyard[row + half_n][col + half_n    ] = -1;
 
+        tile_courtyard(courtyard,   row,            col,            half_n);
+        tile_courtyard(courtyard,   row + half_n,   col,            half_n);
+        tile_courtyard(courtyard,   row,            col + half_n,   half_n);
+        tile_courtyard(courtyard,   row + half_n,   col + half_n,   half_n);
 
-        } else if (contains_hole(courtyard, row, col + half_n, half_n)) { // C
+        std::cout << row + half_n + (hole.first / (row + half_n)) - 1 << " " 
+                  << col + half_n + (hole.second / (col + half_n)) - 1<< std::endl;
+        place_tile(courtyard, row + half_n - 1, col + half_n -1, std::make_pair(
+            row + half_n + (hole.first / (row + half_n)) - 1, 
+            col + half_n + (hole.second / (col + half_n)) - 1
+        ));
 
-            courtyard[row + half_n - 1][col + half_n - 1] = -1;
-            courtyard[row + half_n    ][col + half_n - 1] = -1;
-            courtyard[row + half_n    ][col + half_n    ] = -1;
-
-            tile_courtyard(courtyard,   row,            col,            row + half_n - 1,       col + half_n - 1,       half_n); // A
-            tile_courtyard(courtyard,   row + half_n,   col,            row + half_n,           col + half_n - 1,       half_n); // B
-            tile_courtyard(courtyard,   row,            col + half_n,   sRow,                   sCol,                   half_n); // C
-            tile_courtyard(courtyard,   row + half_n,   col + half_n,   row + half_n,           col + half_n,           half_n); // D
-
-            courtyard[row + half_n - 1][col + half_n - 1] = tile_number;
-            courtyard[row + half_n    ][col + half_n - 1] = tile_number;
-            courtyard[row + half_n    ][col + half_n    ] = tile_number;
-
-            tile_number++;
-
-        } else if (contains_hole(courtyard, row + half_n, col + half_n, half_n)) { // D
-
-            courtyard[row + half_n - 1][col + half_n - 1] = -1;
-            courtyard[row + half_n    ][col + half_n - 1] = -1;
-            courtyard[row + half_n - 1][col + half_n    ] = -1;
-
-            tile_courtyard(courtyard,   row,            col,            row + half_n - 1,       col + half_n - 1,       half_n); // A
-            tile_courtyard(courtyard,   row + half_n,   col,            row + half_n,           col + half_n - 1,       half_n); // B
-            tile_courtyard(courtyard,   row,            col + half_n,   row + half_n - 1,       col + half_n,           half_n); // C
-            tile_courtyard(courtyard,   row + half_n,   col + half_n,   sRow,                   sCol,  half_n); // D
-
-            courtyard[row + half_n - 1][col + half_n - 1] = tile_number;
-            courtyard[row + half_n    ][col + half_n - 1] = tile_number;
-            courtyard[row + half_n - 1][col + half_n    ] = tile_number;
-
-            tile_number++;
-
-        }
     }
-
 
 }
 
-bool contains_hole(int courtyard[N][N], int row, int col, int n) {
-    
-    // A C
-    // B D
-    
+std::pair<int, int> find_hole(int courtyard[N][N], int row, int col, int n) {
+        
+    std::pair<int, int> hole = std::make_pair(-1, -1);
+
     for (int i = row; i < row + n; i++) {
         for (int j = col; j < col + n; j++) {
-            if (courtyard[i][j] == -1) return true;
+            if (courtyard[i][j] == -1) {
+                hole.first = i;
+                hole.second = j;
+            }
         }
     }
 
-    return false;
+    return hole;
+}
+
+void place_tile(int courtyard[N][N], int row, int col, std::pair<int, int> hole) {
+
+    for (int i = 0; i < 2; i++)
+        for (int j = 0; j < 2; j++)
+            if (row + i != hole.first || col + j != hole.second)
+                courtyard[row + i][col + j] = tile_number;
+
+    tile_number++;
+
 }
 
 void print_courtyard(int courtyard[N][N]) {
